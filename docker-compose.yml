@@ -40,6 +40,8 @@ services:
         gelf-address: udp://localhost:12201
   elasticsearch:
     image: elasticsearch:6.8.16
+    ports:
+      - "9200:9200"
   logstash:
     image: logstash:6.8.16
     command: |
@@ -66,6 +68,7 @@ services:
 
     ports:
       - "12201:12201/udp"
+      - "5044:5044"
   kibana:
     image: kibana:6.8.16
     ports:
