@@ -17,7 +17,8 @@ services:
       options:
         gelf-address: udp://localhost:12201
   webui:
-    build: webui
+#    build: webui
+    image: brahimhamdi/webui
     ports:
       - "8000:80"
     volumes:
