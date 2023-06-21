@@ -21,8 +21,6 @@ services:
     image: brahimhamdi/webui
     ports:
       - "8000:80"
-    volumes:
-      - "./webui/files/:/files/"
     logging:
       driver: gelf
       options:
