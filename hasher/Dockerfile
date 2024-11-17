@@ -2,7 +2,7 @@ FROM ruby:3-alpine
 RUN apk add --update build-base curl
 RUN gem install rackup
 RUN gem install sinatra
-# RUN gem install thin
+RUN gem install puma
 ADD hasher.rb /
 CMD ["ruby", "hasher.rb"]
 EXPOSE 80
