@@ -1,0 +1,82 @@
+version: "3"
+services:
+  rng:
+    image: rng:4.0
+    build: rng
+    ports:
+      - "8001:8001"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+  hasher:
+    image: hasher:4.0
+    build: hasher
+    ports:
+      - "8002:8002"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+  webui:
+    image: brahimhamdi/webui:2.0
+#    build: webui
+    ports:
+      - "8000:80"
+    volumes:
+      - "./webui/files/:/files/"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+  redis:
+    image: redis
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+  worker:
+    image: worker:4.0
+    build: worker
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+  elasticsearch:
+    image: elasticsearch:6.8.16
+    ports:
+      - 9200:9200
+  logstash:
+    image: logstash:6.8.16
+    ports:
+      - 9600:9600
+    command: |
+      -e '
+      input {
+        gelf { }
+        heartbeat { }
+      }
+      filter {
+        ruby {
+          code => "
+            event.to_hash.keys.each { |k| event[ k.gsub('"'.'"','"'_'"') ] = event.remove(k) if k.include?'"'.'"' }
+          "
+        }
+      }
+      output {
+        elasticsearch {
+          hosts => ["elasticsearch:9200"]
+        }
+        stdout {
+          codec => rubydebug
+        }
+      }'
+
+    ports:
+      - "12201:12201/udp"
+  kibana:
+    image: kibana:6.8.16
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
