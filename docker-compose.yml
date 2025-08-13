@@ -46,8 +46,6 @@ services:
   logstash:
     image: logstash:6.8.16
     container_name: logstash
-    ports:
-      - 9600:9600
     command: |
       -e '
       input {
@@ -71,7 +69,8 @@ services:
       }'
 
     ports:
-      - "12201:12201/udp"
+      - 9600:9600
+      - 12201:12201/udp
   kibana:
     image: kibana:6.8.16
     container_name: kibana
