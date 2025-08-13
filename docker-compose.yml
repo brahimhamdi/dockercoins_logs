@@ -1,26 +1,21 @@
-version: "3"
 services:
   rng:
-    image: rng:4.0
-    build: rng
-    ports:
-      - "8001:8001"
+    image: brahimhamdi/rng
+    container_name: rng
     logging:
       driver: gelf
       options:
         gelf-address: udp://localhost:12201
   hasher:
-    image: hasher:4.0
-    build: hasher
-    ports:
-      - "8002:8002"
+    image: brahimhamdi/hasher
+    container_name: hasher
     logging:
       driver: gelf
       options:
         gelf-address: udp://localhost:12201
   webui:
-    image: brahimhamdi/webui:2.0
-#    build: webui
+    image: brahimhamdi/webui
+    container_name: webui
     ports:
       - "8000:80"
     volumes:
@@ -31,23 +26,26 @@ services:
         gelf-address: udp://localhost:12201
   redis:
     image: redis
+    container_name: redis
     logging:
       driver: gelf
       options:
         gelf-address: udp://localhost:12201
   worker:
-    image: worker:4.0
-    build: worker
+    image: brahimhamdi/worker
+    container_name: worker
     logging:
       driver: gelf
       options:
         gelf-address: udp://localhost:12201
   elasticsearch:
+    container_name: elasticsearch
     image: elasticsearch:6.8.16
     ports:
       - 9200:9200
   logstash:
     image: logstash:6.8.16
+    container_name: logstash
     ports:
       - 9600:9600
     command: |
@@ -76,6 +74,7 @@ services:
       - "12201:12201/udp"
   kibana:
     image: kibana:6.8.16
+    container_name: kibana
     ports:
       - "5601:5601"
     environment:
